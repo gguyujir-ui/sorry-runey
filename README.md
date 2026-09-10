@@ -1,4 +1,4 @@
-# Apology Website — "Sorry, Bestie..."
+# Apology Website — "i'm sorry, runey..."
 
 A single-page website (everything lives in `index.html`), casual tone for a friend (not romantic):
 
