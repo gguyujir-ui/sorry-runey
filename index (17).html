@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maaf, Bestie...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     WARNA & FONT
+     ============================================================ */
+  :root{
+    --bg:            #2a0d12;
+    --bg-deep:       #1c0709;
+    --card:          #5c1620;
+    --card-soft:     #4a1119;
+    --ink:           #f4e6e4;
+    --muted:         #d8b3b6;
+    --pink:          #f4c9cf;
+    --pink-ink:      #5c1b22;
+    --heart:         #ea6b83;
+    --shadow:        rgba(0,0,0,0.45);
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:radial-gradient(circle at 50% 0%, var(--card-soft), var(--bg) 60%);
+    color:var(--ink);
+    font-family:'EB Garamond', serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .script{
+    font-family:'Alex Brush', cursive;
+    line-height:1.15;
+    color:var(--ink);
+  }
+
+  .muted{ color:var(--muted); }
+
+  /* ---------- layar (screen) ---------- */
+  .screen{
+    display:none;
+    min-height:100svh;
+    padding:10vh 22px 8vh;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:26px;
+    position:relative;
+  }
+  .screen.active{ display:flex; animation:fade-in 0.6s ease; }
+
+  @keyframes fade-in{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .screen h1.script{ font-size:clamp(2.6rem, 9vw, 4rem); margin:0; }
+  .screen h2.script{ font-size:clamp(2.1rem, 7vw, 3rem); margin:0; }
+
+  .subtitle{
+    max-width:440px;
+    font-size:1.05rem;
+    line-height:1.6;
+    color:var(--muted);
+    margin:0;
+  }
+
+  /* ---------- tombol pil ---------- */
+  .btn-row{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .pill-btn{
+    background:var(--pink);
+    color:var(--pink-ink);
+    border:none;
+    border-radius:999px;
+    padding:14px 34px;
+    font-family:'EB Garamond', serif;
+    font-size:1.05rem;
+    cursor:pointer;
+    box-shadow:0 14px 26px -14px var(--shadow);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  .pill-btn:hover{ transform:translateY(-2px); }
+  .pill-btn.outline{
+    background:transparent;
+    border:1.5px solid var(--pink);
+    color:var(--pink);
+    box-shadow:none;
+  }
+  .pill-btn:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  /* ---------- amplop ---------- */
+  .envelope{
+    --w: min(70vw, 300px);
+    width:var(--w);
+    aspect-ratio:3/2;
+    position:relative;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    perspective:1100px;
+  }
+  .envelope-body{
+    position:absolute; inset:0;
+    background:var(--card);
+    border-radius:6px;
+    box-shadow:0 22px 40px -16px var(--shadow);
+    overflow:hidden;
+  }
+  .envelope-body::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:58%;
+    background:
+      linear-gradient(to top left, transparent 49.6%, var(--card-soft) 50%),
+      linear-gradient(to top right, transparent 49.6%, var(--card-soft) 50%);
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; right:0; height:56%;
+    background:var(--card-soft);
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;
+    transition:transform 0.7s cubic-bezier(.6,.05,.28,1);
+    transform-style:preserve-3d;
+    z-index:2;
+  }
+  .envelope-heart{
+    position:absolute; left:50%; top:56%;
+    transform:translate(-50%,-50%);
+    font-size:1.4rem;
+    z-index:1;
+    opacity:0.9;
+  }
+  .envelope.is-open .envelope-flap{ transform:rotateX(178deg); z-index:1; }
+
+  .envelope-hint{ font-size:0.85rem; color:var(--muted); transition:opacity 0.3s ease; }
+  .envelope-hint.is-hidden{ opacity:0; }
+
+  .envelope-choices{
+    display:flex; flex-direction:column; gap:14px; align-items:center;
+    opacity:0; transform:translateY(10px);
+    transition:opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
+    pointer-events:none;
+  }
+  .envelope-choices.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  /* ---------- kartu lagu ---------- */
+  .song-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--card);
+    border-radius:12px;
+    padding:12px 16px;
+    width:100%;
+    max-width:420px;
+    box-shadow:0 14px 30px -18px var(--shadow);
+    text-align:left;
+  }
+  .song-cover{
+    width:52px; height:52px;
+    border-radius:8px;
+    background:linear-gradient(135deg,#8a2436,#3d0f16);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+    flex-shrink:0;
+  }
+  .song-info{ flex:1; min-width:0; }
+  .song-info strong{ display:block; font-size:0.95rem; }
+  .song-info span{ display:block; font-size:0.78rem; color:var(--muted); }
+  .song-play{
+    width:40px; height:40px;
+    border-radius:50%;
+    border:none;
+    background:var(--pink);
+    color:var(--pink-ink);
+    font-size:0.95rem;
+    cursor:pointer;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- surat ---------- */
+  .letter-body{ max-width:520px; text-align:left; }
+  .letter-body p{ line-height:1.8; font-size:1.02rem; margin:0 0 16px; color:var(--ink); }
+
+  /* ---------- game: sambungkan jembatan ---------- */
+  .bridge-stage{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding:0 6px;
+  }
+  .side-heart{ font-size:2rem; flex-shrink:0; }
+
+  .bridge-track{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    flex-wrap:wrap;
+    align-content:center;
+  }
+  .bridge-slot{
+    width:22px; height:22px;
+    border-radius:50%;
+    border:1.5px dashed var(--muted);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.8rem;
+    color:transparent;
+    transition:background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+  .bridge-slot.is-filled{
+    border-style:solid;
+    border-color:var(--heart);
+    background:var(--heart);
+    color:#fff;
+    transform:scale(1.15);
+  }
+
+  .floating-heart{
+    position:absolute;
+    bottom:8px;
+    background:none;
+    border:none;
+    font-size:1.7rem;
+    cursor:pointer;
+    line-height:1;
+    padding:6px;
+    animation:float-up var(--dur, 3s) ease-in forwards;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+  }
+  @keyframes float-up{
+    0%{ transform:translateY(0) scale(0.7); opacity:0; }
+    12%{ opacity:1; transform:translateY(-10px) scale(1); }
+    88%{ opacity:1; }
+    100%{ transform:translateY(-150px) scale(0.9); opacity:0; }
+  }
+
+  .bridge-status{ font-size:0.9rem; color:var(--muted); }
+
+  /* ---------- hati mengambang di layar akhir ---------- */
+  .ambient-hearts{
+    position:fixed; inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .ambient-heart{
+    position:absolute;
+    bottom:-10%;
+    font-size:1.2rem;
+    opacity:0.55;
+    animation:drift-up linear infinite;
+  }
+  @keyframes drift-up{
+    from{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.5; }
+    to{ transform:translateY(-115vh) translateX(20px); opacity:0; }
+  }
+
+  .screen > *{ position:relative; z-index:1; }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     1. LANDING
+     ============================================================ -->
+<section class="screen active" data-screen="landing">
+  <h1 class="script" id="txtJudulLanding">Maaf, Bestie...</h1>
+  <p class="subtitle" id="txtSubLanding">Ruang buat aku jujur dan benerin hubungan pertemanan kita.</p>
+  <button class="pill-btn" data-goto="envelope">Mulai</button>
+</section>
+
+<!-- ============================================================
+     2. AMPLOP
+     ============================================================ -->
+<section class="screen" data-screen="envelope">
+  <button class="envelope" id="envelopeBtn" aria-label="Buka amplop">
+    <div class="envelope-body"></div>
+    <div class="envelope-flap"></div>
+    <div class="envelope-heart">🤝</div>
+  </button>
+  <p class="envelope-hint" id="envelopeHint">ketuk buat buka</p>
+
+  <div class="envelope-choices" id="envelopeChoices">
+    <button class="pill-btn" data-goto="letter">Baca</button>
+    <button class="pill-btn outline" data-goto="waiting" data-return="envelope">Aku butuh waktu lagi</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. TUNGGU DULU (dipakai ulang dari 2 tempat)
+     ============================================================ -->
+<section class="screen" data-screen="waiting">
+  <h2 class="script">Ambil waktu yang kamu perlu.</h2>
+  <p class="subtitle">Nggak apa-apa kalau belum siap sekarang. Aku di sini, kapan pun kamu udah mau ngobrol.</p>
+  <p class="subtitle">Circle kita tetep solid kok. 🤝</p>
+  <button class="pill-btn outline" id="btnBackFromWaiting">Kembali</button>
+</section>
+
+<!-- ============================================================
+     4. SURAT
+     ============================================================ -->
+<section class="screen" data-screen="letter">
+  <h2 class="script" id="txtJudulSurat">Maaf, Bestie...</h2>
+
+  <div class="song-card">
+    <div class="song-cover">♪</div>
+    <div class="song-info">
+      <strong id="songJudul">Judul Lagu</strong>
+      <span id="songArtis">Nama Artis</span>
+    </div>
+    <button class="song-play" id="songPlayBtn" aria-label="Putar lagu">▶</button>
+  </div>
+
+  <div class="letter-body" id="letterBody"></div>
+
+  <button class="pill-btn" data-goto="forgive">Lanjut</button>
+</section>
+
+<!-- ============================================================
+     5. MINTA MAAF
+     ============================================================ -->
+<section class="screen" data-screen="forgive">
+  <h2 class="script">Kamu mau maafin aku?</h2>
+  <p style="font-size:3rem; margin:0;">🥺</p>
+  <div class="btn-row">
+    <button class="pill-btn" data-goto="yesTransition">Ya</button>
+    <button class="pill-btn outline" data-goto="waiting" data-return="forgive">Aku butuh waktu lagi</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. TRANSISI "YEE"
+     ============================================================ -->
+<section class="screen" data-screen="yesTransition">
+  <h1 class="script">Yeaay...</h1>
+  <button class="pill-btn" data-goto="game">Lanjut</button>
+</section>
+
+<!-- ============================================================
+     7. GAME — SAMBUNGKAN JEMBATAN
+     ============================================================ -->
+<section class="screen" data-screen="game">
+  <h2 class="script">Yuk, Sambung Lagi</h2>
+  <p class="subtitle">Pencet tos yang muncul buat bantu nutup jarak di antara kita berdua.</p>
+
+  <div class="bridge-stage" id="bridgeStage">
+    <span class="side-heart">🤝</span>
+    <div class="bridge-track" id="bridgeTrack"></div>
+    <span class="side-heart">🤝</span>
+  </div>
+
+  <p class="bridge-status">Kompak: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
+
+  <button class="pill-btn" id="btnGameLanjut" data-goto="promise" disabled>Lanjut</button>
+</section>
+
+<!-- ============================================================
+     8. JANJI (PENUTUP)
+     ============================================================ -->
+<section class="screen" data-screen="promise">
+  <div class="ambient-hearts" id="ambientHearts"></div>
+  <h2 class="script">Aku janji, ini nggak akan kejadian lagi.</h2>
+  <p class="subtitle">Makasih udah baca sampai sini, bestie. Circle kita masih solid kok. 🤝</p>
+  <button class="pill-btn outline" data-goto="landing">↺ ulangi dari awal</button>
+</section>
+
+<script>
+/* ================================================================
+   KONFIGURASI — ganti semua isi di bawah ini sesuai kebutuhanmu
+   ================================================================ */
+const KONFIGURASI = {
+  paragrafSurat: [
+    "Aku nulis ini karena aku mau kasih kamu ruang, tapi aku juga perlu jujur soal apa yang kejadian kemarin. Aku sadar kata-kata atau sikapku nggak nunjukin gimana sebenernya perasaanku ke kamu sebagai temen, dan aku minta maaf buat itu.",
+    "Aku benci ada jarak kayak gini di antara kita. Nggak pernah ada niat buat nyakitin kamu, tapi aku tahu niat aja nggak cukup buat ngubah gimana rasanya buat kamu. Perasaan kamu valid, dan aku nyesel udah bikin kamu capek atau ragu sama aku.",
+    "Pertemanan kita berarti banget buat aku, dan aku nggak mau satu kesalahpahaman ngerusak semua hal baik yang udah kita bangun bareng-bareng. Aku mau dengerin, aku mau ngerti sudut pandang kamu, kapan pun kamu udah siap ngobrol.",
+    "Ambil waktu sebanyak yang kamu perlu. Yang penting kamu tahu, aku di sini, dan aku beneran berharap kita bisa balik akrab kayak biasa."
+  ],
+
+  musik: {
+    file: "lagu.mp3",       // taruh file musikmu di folder yang sama, lalu sesuaikan nama file ini
+    judul: "Judul Lagu",
+    artis: "Nama Artis"
+  },
+
+  jumlahHatiJembatan: 10   // jumlah "hati" yang perlu dipencet buat menyambungkan jembatan
+};
+
+/* ================================================================
+   render surat & lagu dari KONFIGURASI
+   ================================================================ */
+const letterBody = document.getElementById('letterBody');
+KONFIGURASI.paragrafSurat.forEach(teks=>{
+  const p = document.createElement('p');
+  p.textContent = teks;
+  letterBody.appendChild(p);
+});
+
+document.getElementById('songJudul').textContent = KONFIGURASI.musik.judul;
+document.getElementById('songArtis').textContent = KONFIGURASI.musik.artis;
+
+/* ================================================================
+   navigasi antar layar
+   ================================================================ */
+const screens = document.querySelectorAll('.screen');
+let waitingReturnTo = 'landing';
+
+function gotoScreen(name){
+  screens.forEach(s=> s.classList.toggle('active', s.dataset.screen === name));
+
+  if (name === 'letter') putarLagu();
+
+  if (name === 'game') mulaiGameJembatan();
+  else hentikanGameJembatan();
+
+  if (name === 'promise') mulaiHatiMengambang();
+  else hentikanHatiMengambang();
+
+  window.scrollTo({ top:0, behavior:'instant' in window ? 'instant' : 'auto' });
+}
+
+document.querySelectorAll('[data-goto]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if (btn.dataset.return) waitingReturnTo = btn.dataset.return;
+    gotoScreen(btn.dataset.goto);
+  });
+});
+
+document.getElementById('btnBackFromWaiting').addEventListener('click', ()=>{
+  gotoScreen(waitingReturnTo);
+});
+
+/* ---------- amplop ---------- */
+const envelopeBtn     = document.getElementById('envelopeBtn');
+const envelopeHint     = document.getElementById('envelopeHint');
+const envelopeChoices  = document.getElementById('envelopeChoices');
+
+envelopeBtn.addEventListener('click', ()=>{
+  if (envelopeBtn.classList.contains('is-open')) return;
+  envelopeBtn.classList.add('is-open');
+  envelopeHint.classList.add('is-hidden');
+  setTimeout(()=> envelopeChoices.classList.add('is-visible'), 300);
+});
+
+/* ---------- lagu ---------- */
+const bgMusic    = new Audio();
+bgMusic.loop = true;
+bgMusic.src = KONFIGURASI.musik.file;
+const songPlayBtn = document.getElementById('songPlayBtn');
+
+function putarLagu(){
+  // dipanggil otomatis begitu layar surat dibuka; kalau browser blokir
+  // autoplay, tombol ▶ di kartu lagu tetap bisa dipencet manual
+  bgMusic.play().then(()=> songPlayBtn.textContent = '❚❚').catch(()=>{});
+}
+
+songPlayBtn.addEventListener('click', ()=>{
+  if (bgMusic.paused){ putarLagu(); }
+  else{
+    bgMusic.pause();
+    songPlayBtn.textContent = '▶';
+  }
+});
+
+/* ---------- game: sambungkan jembatan ---------- */
+const bridgeStage  = document.getElementById('bridgeStage');
+const bridgeTrack  = document.getElementById('bridgeTrack');
+const bridgeCountEl= document.getElementById('bridgeCount');
+const bridgeTotalEl= document.getElementById('bridgeTotal');
+const btnGameLanjut= document.getElementById('btnGameLanjut');
+
+const totalHati = KONFIGURASI.jumlahHatiJembatan;
+bridgeTotalEl.textContent = totalHati;
+
+let slotEls = [];
+let terisi = 0;
+let spawnTimer = null;
+
+function siapkanSlotJembatan(){
+  bridgeTrack.innerHTML = '';
+  slotEls = [];
+  for (let i = 0; i < totalHati; i++){
+    const slot = document.createElement('div');
+    slot.className = 'bridge-slot';
+    bridgeTrack.appendChild(slot);
+    slotEls.push(slot);
+  }
+}
+
+function spawnHatiMengambang(){
+  if (terisi >= totalHati) return;
+  const h = document.createElement('button');
+  h.className = 'floating-heart';
+  h.textContent = '🤝';
+  h.style.left = (8 + Math.random() * 80) + '%';
+  h.style.setProperty('--dur', (2.6 + Math.random() * 1.4).toFixed(2) + 's');
+
+  h.addEventListener('click', ()=>{
+    if (terisi >= totalHati){ h.remove(); return; }
+    slotEls[terisi].classList.add('is-filled');
+    terisi++;
+    bridgeCountEl.textContent = terisi;
+    h.remove();
+
+    if (terisi >= totalHati){
+      clearInterval(spawnTimer);
+      document.querySelectorAll('.floating-heart').forEach(el=> el.remove());
+      btnGameLanjut.disabled = false;
+    }
+  });
+
+  bridgeStage.appendChild(h);
+  setTimeout(()=>{ if (h.isConnected) h.remove(); }, 4200);
+}
+
+function mulaiGameJembatan(){
+  terisi = 0;
+  bridgeCountEl.textContent = 0;
+  btnGameLanjut.disabled = true;
+  siapkanSlotJembatan();
+  document.querySelectorAll('.floating-heart').forEach(el=> el.remove());
+  clearInterval(spawnTimer);
+  spawnTimer = setInterval(spawnHatiMengambang, 750);
+}
+
+function hentikanGameJembatan(){
+  clearInterval(spawnTimer);
+  spawnTimer = null;
+}
+
+/* ---------- hati mengambang di layar penutup ---------- */
+const ambientHearts = document.getElementById('ambientHearts');
+let ambientTimer = null;
+
+function mulaiHatiMengambang(){
+  ambientHearts.innerHTML = '';
+  ambientTimer = setInterval(()=>{
+    const h = document.createElement('span');
+    h.className = 'ambient-heart';
+    h.textContent = ['✨','🎉'][Math.floor(Math.random()*2)];
+    h.style.left = Math.random()*100 + '%';
+    h.style.animationDuration = (6 + Math.random()*5) + 's';
+    ambientHearts.appendChild(h);
+    setTimeout(()=>{ if (h.isConnected) h.remove(); }, 12000);
+  }, 500);
+}
+
+function hentikanHatiMengambang(){
+  clearInterval(ambientTimer);
+  ambientTimer = null;
+}
+</script>
+</body>
+</html>
