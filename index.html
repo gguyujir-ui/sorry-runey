@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorry, Bestie...</title>
+<title>i'm sorry, runey...</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -306,9 +306,9 @@
      1. LANDING
      ============================================================ -->
 <section class="screen active" data-screen="landing">
-  <h1 class="script" id="txtLandingTitle">Sorry, Bestie...</h1>
-  <p class="subtitle" id="txtLandingSub">A space for me to be honest and patch things up between us.</p>
-  <button class="pill-btn" data-goto="envelope">Start</button>
+  <h1 class="script" id="txtLandingTitle">i'm sorry, bestie...</h1>
+  <p class="subtitle" id="txtLandingSub">a space for me to be honest and patch things up between us.</p>
+  <button class="pill-btn" data-goto="envelope">start</button>
 </section>
 
 <!-- ============================================================
@@ -323,7 +323,7 @@
   <p class="envelope-hint" id="envelopeHint">tap to open</p>
 
   <div class="envelope-choices" id="envelopeChoices">
-    <button class="pill-btn" data-goto="letter">Read</button>
+    <button class="pill-btn" data-goto="letter">read</button>
     <button class="pill-btn outline" data-goto="waiting" data-return="envelope">I need more time</button>
   </div>
 </section>
@@ -332,22 +332,22 @@
      3. WAITING SCREEN (reused in two places)
      ============================================================ -->
 <section class="screen" data-screen="waiting">
-  <h2 class="script">Take all the time you need.</h2>
-  <p class="subtitle">It's okay if you're not ready yet. I'm here, whenever you want to talk.</p>
-  <p class="subtitle">Our circle's still solid. 🤝</p>
-  <button class="pill-btn outline" id="btnBackFromWaiting">Back</button>
+  <h2 class="script">take all the time you need.</h2>
+  <p class="subtitle">it's okay if you're not ready yet. I'm here, whenever you want to talk.</p>
+  <p class="subtitle">our friend yang imut ini tetap menunggu. 🤝</p>
+  <button class="pill-btn outline" id="btnBackFromWaiting">back</button>
 </section>
 
 <!-- ============================================================
      4. LETTER
      ============================================================ -->
 <section class="screen" data-screen="letter">
-  <h2 class="script" id="txtLetterTitle">Sorry, Bestie...</h2>
+  <h2 class="script" id="txtLetterTitle">i'm sorry, bestie...</h2>
 
   <div class="song-card">
     <div class="song-cover">♪</div>
     <div class="song-info">
-      <strong id="songTitle">Song Title</strong>
+      <strong id="songTitle">song Title</strong>
       <span id="songArtist">Artist Name</span>
     </div>
     <button class="song-play" id="songPlayBtn" aria-label="Play song">▶</button>
@@ -363,7 +363,7 @@
      5. FORGIVENESS
      ============================================================ -->
 <section class="screen" data-screen="forgive">
-  <h2 class="script">Will you forgive me?</h2>
+  <h2 class="script">will you forgive me?</h2>
   <p style="font-size:3rem; margin:0;">🥺</p>
   <div class="btn-row">
     <button class="pill-btn" data-goto="yesTransition">Yes</button>
@@ -375,16 +375,16 @@
      6. "YEE" TRANSITION
      ============================================================ -->
 <section class="screen" data-screen="yesTransition">
-  <h1 class="script">Yeaay...</h1>
-  <button class="pill-btn" data-goto="game">Continue</button>
+  <h1 class="script">yeaay...</h1>
+  <button class="pill-btn" data-goto="game">continue</button>
 </section>
 
 <!-- ============================================================
      7. GAME — RECONNECT
      ============================================================ -->
 <section class="screen" data-screen="game">
-  <h2 class="script">Let's Reconnect</h2>
-  <p class="subtitle">Tap the high-fives as they float up to help close the gap between us.</p>
+  <h2 class="script">let's reconnect</h2>
+  <p class="subtitle">tap the high-fives as they float up to help close the gap between us.</p>
 
   <div class="bridge-stage" id="bridgeStage">
     <span class="side-heart">🤝</span>
@@ -392,9 +392,9 @@
     <span class="side-heart">🤝</span>
   </div>
 
-  <p class="bridge-status">Synced: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
+  <p class="bridge-status">synced: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
 
-  <button class="pill-btn" id="btnGameContinue" data-goto="promise" disabled>Continue</button>
+  <button class="pill-btn" id="btnGameContinue" data-goto="promise" disabled>continue</button>
 </section>
 
 <!-- ============================================================
@@ -402,8 +402,8 @@
      ============================================================ -->
 <section class="screen" data-screen="promise">
   <div class="ambient-hearts" id="ambientHearts"></div>
-  <h2 class="script">I promise, it won't happen again.</h2>
-  <p class="subtitle">Thanks for reading all the way through, bestie. Our circle's still solid. 🤝</p>
+  <h2 class="script">i promise, it won't happen again.</h2>
+  <p class="subtitle">thanks for reading all the way through, bestie. 🤝</p>
   <button class="pill-btn outline" data-goto="landing">↺ start over</button>
 </section>
 
@@ -413,14 +413,15 @@
    ================================================================ */
 const CONFIG = {
   letterParagraphs: [
-    "I'm sorry for how I kept teasing you yesterday until it made you upset. I knew you were already getting annoyed, but I kept going anyway instead of stopping.",
-    "I know that's on me — the moment I realized you weren't comfortable, I should've stopped right away instead of continuing just because I still thought it was funny. Honestly, I never meant to hurt your feelings or put you down. I just got too caught up in the moment, and a joke that started out harmless ended up going too far.",
-    "I totally get why you ended up annoyed — if I were in your shoes, I'd probably feel the same way if it kept happening to me. So I really am sorry. I don't want some pointless joke to make things awkward between us, or worse, push us apart.",
-    "I'll think twice before teasing you from now on, especially once I notice you're getting annoyed. Turns out being the class clown one too many times isn't always funny lol.",
-    "I hope you can forgive me and not dwell on what happened. I'll do my best not to repeat the same mistake and know where to draw the line when we're joking around."
+  "aku minta maaf ya soal aku yang kemarin terus-terusan ngejek kamu sampai bikin kamu ngambek. Aku sadar kok kalau waktu itu kamu udah mulai kesel, cuma aku malah masih keterusan dan nggak berhenti.",
+  "aku tau itu salah aku, karena harusnya pas aku udah tau kamu nggak nyaman aku langsung berhenti, bukan malah lanjutin cuma karena ngerasa bercandaannya masih lucu. Jujur aku nggak ada maksud buat bikin kamu sakit hati atau ngeremehin kamu. Aku cuma terlalu kebawa suasana dan akhirnya candaan yang awalnya biasa aja malah jadi kelewatan.",
+  "aku juga ngerti kalau kamu akhirnya kesel, karena kalau aku ada di posisi kamu mungkin aku juga bakal kesel kalau terus-terusan digituin. Jadi aku beneran minta maaf ya. Aku nggak mau gara-gara bercandaan yang sebenarnya nggak penting malah bikin kita jadi nggak enakan atau malah jauh.",
+  "aku bakal lebih mikir lagi sebelum ngejek kamu, terutama kalau udah tau kamu mulai kesel. Soalnya ternyata jadi badut yang kebanyakan tampil juga nggak selalu lucu wkwk.",
+  "aku harap kamu bisa maafin aku dan nggak terlalu dipikirin lagi soal kemarin. Aku bakal berusaha buat nggak ngulangin hal yang sama dan lebih tau batas kalau lagi bercanda sama kamu."
+],
   ],
 
-  senderName: "Akmal",   // name shown on the letter's signature
+  senderName: "akmal",   // name shown on the letter's signature
 
   song: {
     file: "song.mp3",     // put your music file in the same folder, then update this filename
