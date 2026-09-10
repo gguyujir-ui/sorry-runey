@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorry, Bestie...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     COLORS & FONTS
+     ============================================================ */
+  :root{
+    --bg:            #2a0d12;
+    --bg-deep:       #1c0709;
+    --card:          #5c1620;
+    --card-soft:     #4a1119;
+    --ink:           #f4e6e4;
+    --muted:         #d8b3b6;
+    --pink:          #f4c9cf;
+    --pink-ink:      #5c1b22;
+    --heart:         #ea6b83;
+    --shadow:        rgba(0,0,0,0.45);
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:radial-gradient(circle at 50% 0%, var(--card-soft), var(--bg) 60%);
+    color:var(--ink);
+    font-family:'EB Garamond', serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .script{
+    font-family:'Alex Brush', cursive;
+    line-height:1.15;
+    color:var(--ink);
+  }
+
+  .muted{ color:var(--muted); }
+
+  /* ---------- screens ---------- */
+  .screen{
+    display:none;
+    min-height:100svh;
+    padding:10vh 22px 8vh;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:26px;
+    position:relative;
+  }
+  .screen.active{ display:flex; animation:fade-in 0.6s ease; }
+
+  @keyframes fade-in{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .screen h1.script{ font-size:clamp(2.6rem, 9vw, 4rem); margin:0; }
+  .screen h2.script{ font-size:clamp(2.1rem, 7vw, 3rem); margin:0; }
+
+  .subtitle{
+    max-width:440px;
+    font-size:1.05rem;
+    line-height:1.6;
+    color:var(--muted);
+    margin:0;
+  }
+
+  /* ---------- pill buttons ---------- */
+  .btn-row{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .pill-btn{
+    background:var(--pink);
+    color:var(--pink-ink);
+    border:none;
+    border-radius:999px;
+    padding:14px 34px;
+    font-family:'EB Garamond', serif;
+    font-size:1.05rem;
+    cursor:pointer;
+    box-shadow:0 14px 26px -14px var(--shadow);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+  .pill-btn:hover{ transform:translateY(-2px); }
+  .pill-btn.outline{
+    background:transparent;
+    border:1.5px solid var(--pink);
+    color:var(--pink);
+    box-shadow:none;
+  }
+  .pill-btn:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  /* ---------- envelope ---------- */
+  .envelope{
+    --w: min(70vw, 300px);
+    width:var(--w);
+    aspect-ratio:3/2;
+    position:relative;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    perspective:1100px;
+  }
+  .envelope-body{
+    position:absolute; inset:0;
+    background:var(--card);
+    border-radius:6px;
+    box-shadow:0 22px 40px -16px var(--shadow);
+    overflow:hidden;
+  }
+  .envelope-body::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:58%;
+    background:
+      linear-gradient(to top left, transparent 49.6%, var(--card-soft) 50%),
+      linear-gradient(to top right, transparent 49.6%, var(--card-soft) 50%);
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; right:0; height:56%;
+    background:var(--card-soft);
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;
+    transition:transform 0.7s cubic-bezier(.6,.05,.28,1);
+    transform-style:preserve-3d;
+    z-index:2;
+  }
+  .envelope-heart{
+    position:absolute; left:50%; top:56%;
+    transform:translate(-50%,-50%);
+    font-size:1.4rem;
+    z-index:1;
+    opacity:0.9;
+  }
+  .envelope.is-open .envelope-flap{ transform:rotateX(178deg); z-index:1; }
+
+  .envelope-hint{ font-size:0.85rem; color:var(--muted); transition:opacity 0.3s ease; }
+  .envelope-hint.is-hidden{ opacity:0; }
+
+  .envelope-choices{
+    display:flex; flex-direction:column; gap:14px; align-items:center;
+    opacity:0; transform:translateY(10px);
+    transition:opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
+    pointer-events:none;
+  }
+  .envelope-choices.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  /* ---------- song card ---------- */
+  .song-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--card);
+    border-radius:12px;
+    padding:12px 16px;
+    width:100%;
+    max-width:420px;
+    box-shadow:0 14px 30px -18px var(--shadow);
+    text-align:left;
+  }
+  .song-cover{
+    width:52px; height:52px;
+    border-radius:8px;
+    background:linear-gradient(135deg,#8a2436,#3d0f16);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+    flex-shrink:0;
+  }
+  .song-info{ flex:1; min-width:0; }
+  .song-info strong{ display:block; font-size:0.95rem; }
+  .song-info span{ display:block; font-size:0.78rem; color:var(--muted); }
+  .song-play{
+    width:40px; height:40px;
+    border-radius:50%;
+    border:none;
+    background:var(--pink);
+    color:var(--pink-ink);
+    font-size:0.95rem;
+    cursor:pointer;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- letter ---------- */
+  .letter-body{ max-width:520px; text-align:left; }
+  .letter-body p{ line-height:1.8; font-size:1.02rem; margin:0 0 16px; color:var(--ink); }
+
+  .letter-sign{
+    max-width:520px;
+    width:100%;
+    text-align:right;
+    color:var(--muted);
+    font-size:1rem;
+    margin-top:-10px;
+  }
+
+  /* ---------- game: reconnect ---------- */
+  .bridge-stage{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding:0 6px;
+  }
+  .side-heart{ font-size:2rem; flex-shrink:0; }
+
+  .bridge-track{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    flex-wrap:wrap;
+    align-content:center;
+  }
+  .bridge-slot{
+    width:22px; height:22px;
+    border-radius:50%;
+    border:1.5px dashed var(--muted);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.8rem;
+    color:transparent;
+    transition:background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+  .bridge-slot.is-filled{
+    border-style:solid;
+    border-color:var(--heart);
+    background:var(--heart);
+    color:#fff;
+    transform:scale(1.15);
+  }
+
+  .floating-heart{
+    position:absolute;
+    bottom:8px;
+    background:none;
+    border:none;
+    font-size:1.7rem;
+    cursor:pointer;
+    line-height:1;
+    padding:6px;
+    animation:float-up var(--dur, 3s) ease-in forwards;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+  }
+  @keyframes float-up{
+    0%{ transform:translateY(0) scale(0.7); opacity:0; }
+    12%{ opacity:1; transform:translateY(-10px) scale(1); }
+    88%{ opacity:1; }
+    100%{ transform:translateY(-150px) scale(0.9); opacity:0; }
+  }
+
+  .bridge-status{ font-size:0.9rem; color:var(--muted); }
+
+  /* ---------- floating hearts on the closing screen ---------- */
+  .ambient-hearts{
+    position:fixed; inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .ambient-heart{
+    position:absolute;
+    bottom:-10%;
+    font-size:1.2rem;
+    opacity:0.55;
+    animation:drift-up linear infinite;
+  }
+  @keyframes drift-up{
+    from{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.5; }
+    to{ transform:translateY(-115vh) translateX(20px); opacity:0; }
+  }
+
+  .screen > *{ position:relative; z-index:1; }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     1. LANDING
+     ============================================================ -->
+<section class="screen active" data-screen="landing">
+  <h1 class="script" id="txtLandingTitle">Sorry, Bestie...</h1>
+  <p class="subtitle" id="txtLandingSub">A space for me to be honest and patch things up between us.</p>
+  <button class="pill-btn" data-goto="envelope">Start</button>
+</section>
+
+<!-- ============================================================
+     2. ENVELOPE
+     ============================================================ -->
+<section class="screen" data-screen="envelope">
+  <button class="envelope" id="envelopeBtn" aria-label="Open the envelope">
+    <div class="envelope-body"></div>
+    <div class="envelope-flap"></div>
+    <div class="envelope-heart">🤝</div>
+  </button>
+  <p class="envelope-hint" id="envelopeHint">tap to open</p>
+
+  <div class="envelope-choices" id="envelopeChoices">
+    <button class="pill-btn" data-goto="letter">Read</button>
+    <button class="pill-btn outline" data-goto="waiting" data-return="envelope">I need more time</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. WAITING SCREEN (reused in two places)
+     ============================================================ -->
+<section class="screen" data-screen="waiting">
+  <h2 class="script">Take all the time you need.</h2>
+  <p class="subtitle">It's okay if you're not ready yet. I'm here, whenever you want to talk.</p>
+  <p class="subtitle">Our circle's still solid. 🤝</p>
+  <button class="pill-btn outline" id="btnBackFromWaiting">Back</button>
+</section>
+
+<!-- ============================================================
+     4. LETTER
+     ============================================================ -->
+<section class="screen" data-screen="letter">
+  <h2 class="script" id="txtLetterTitle">Sorry, Bestie...</h2>
+
+  <div class="song-card">
+    <div class="song-cover">♪</div>
+    <div class="song-info">
+      <strong id="songTitle">Song Title</strong>
+      <span id="songArtist">Artist Name</span>
+    </div>
+    <button class="song-play" id="songPlayBtn" aria-label="Play song">▶</button>
+  </div>
+
+  <div class="letter-body" id="letterBody"></div>
+  <div class="letter-sign" id="letterSign">– <span id="letterSender">Akmal</span></div>
+
+  <button class="pill-btn" data-goto="forgive">Continue</button>
+</section>
+
+<!-- ============================================================
+     5. FORGIVENESS
+     ============================================================ -->
+<section class="screen" data-screen="forgive">
+  <h2 class="script">Will you forgive me?</h2>
+  <p style="font-size:3rem; margin:0;">🥺</p>
+  <div class="btn-row">
+    <button class="pill-btn" data-goto="yesTransition">Yes</button>
+    <button class="pill-btn outline" data-goto="waiting" data-return="forgive">I need more time</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. "YEE" TRANSITION
+     ============================================================ -->
+<section class="screen" data-screen="yesTransition">
+  <h1 class="script">Yeaay...</h1>
+  <button class="pill-btn" data-goto="game">Continue</button>
+</section>
+
+<!-- ============================================================
+     7. GAME — RECONNECT
+     ============================================================ -->
+<section class="screen" data-screen="game">
+  <h2 class="script">Let's Reconnect</h2>
+  <p class="subtitle">Tap the high-fives as they float up to help close the gap between us.</p>
+
+  <div class="bridge-stage" id="bridgeStage">
+    <span class="side-heart">🤝</span>
+    <div class="bridge-track" id="bridgeTrack"></div>
+    <span class="side-heart">🤝</span>
+  </div>
+
+  <p class="bridge-status">Synced: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
+
+  <button class="pill-btn" id="btnGameContinue" data-goto="promise" disabled>Continue</button>
+</section>
+
+<!-- ============================================================
+     8. PROMISE (CLOSING)
+     ============================================================ -->
+<section class="screen" data-screen="promise">
+  <div class="ambient-hearts" id="ambientHearts"></div>
+  <h2 class="script">I promise, it won't happen again.</h2>
+  <p class="subtitle">Thanks for reading all the way through, bestie. Our circle's still solid. 🤝</p>
+  <button class="pill-btn outline" data-goto="landing">↺ start over</button>
+</section>
+
+<script>
+/* ================================================================
+   CONFIG — change everything below to fit your needs
+   ================================================================ */
+const CONFIG = {
+  letterParagraphs: [
+    "I'm sorry for how I kept teasing you yesterday until it made you upset. I knew you were already getting annoyed, but I kept going anyway instead of stopping.",
+    "I know that's on me — the moment I realized you weren't comfortable, I should've stopped right away instead of continuing just because I still thought it was funny. Honestly, I never meant to hurt your feelings or put you down. I just got too caught up in the moment, and a joke that started out harmless ended up going too far.",
+    "I totally get why you ended up annoyed — if I were in your shoes, I'd probably feel the same way if it kept happening to me. So I really am sorry. I don't want some pointless joke to make things awkward between us, or worse, push us apart.",
+    "I'll think twice before teasing you from now on, especially once I notice you're getting annoyed. Turns out being the class clown one too many times isn't always funny lol.",
+    "I hope you can forgive me and not dwell on what happened. I'll do my best not to repeat the same mistake and know where to draw the line when we're joking around."
+  ],
+
+  senderName: "Akmal",   // name shown on the letter's signature
+
+  song: {
+    file: "song.mp3",     // put your music file in the same folder, then update this filename
+    title: "Song Title",
+    artist: "Artist Name"
+  },
+
+  bridgeTapsNeeded: 10    // how many "high-fives" need to be tapped to complete the bridge
+};
+
+/* ================================================================
+   render the letter & song from CONFIG
+   ================================================================ */
+const letterBody = document.getElementById('letterBody');
+CONFIG.letterParagraphs.forEach(text=>{
+  const p = document.createElement('p');
+  p.textContent = text;
+  letterBody.appendChild(p);
+});
+
+document.getElementById('songTitle').textContent  = CONFIG.song.title;
+document.getElementById('songArtist').textContent = CONFIG.song.artist;
+document.getElementById('letterSender').textContent = CONFIG.senderName;
+
+/* ================================================================
+   screen navigation
+   ================================================================ */
+const screens = document.querySelectorAll('.screen');
+let waitingReturnTo = 'landing';
+
+function gotoScreen(name){
+  screens.forEach(s=> s.classList.toggle('active', s.dataset.screen === name));
+
+  if (name === 'letter') playSong();
+
+  if (name === 'game') startBridgeGame();
+  else stopBridgeGame();
+
+  if (name === 'promise') startAmbientHearts();
+  else stopAmbientHearts();
+
+  window.scrollTo({ top:0, behavior:'instant' in window ? 'instant' : 'auto' });
+}
+
+document.querySelectorAll('[data-goto]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if (btn.dataset.return) waitingReturnTo = btn.dataset.return;
+    gotoScreen(btn.dataset.goto);
+  });
+});
+
+document.getElementById('btnBackFromWaiting').addEventListener('click', ()=>{
+  gotoScreen(waitingReturnTo);
+});
+
+/* ---------- envelope ---------- */
+const envelopeBtn     = document.getElementById('envelopeBtn');
+const envelopeHint     = document.getElementById('envelopeHint');
+const envelopeChoices  = document.getElementById('envelopeChoices');
+
+envelopeBtn.addEventListener('click', ()=>{
+  if (envelopeBtn.classList.contains('is-open')) return;
+  envelopeBtn.classList.add('is-open');
+  envelopeHint.classList.add('is-hidden');
+  setTimeout(()=> envelopeChoices.classList.add('is-visible'), 300);
+});
+
+/* ---------- song ---------- */
+const bgMusic = new Audio();
+bgMusic.loop  = true;
+bgMusic.src   = CONFIG.song.file;
+const songPlayBtn = document.getElementById('songPlayBtn');
+
+function playSong(){
+  // called automatically when the letter screen opens; if the browser
+  // blocks autoplay, the ▶ button on the song card can still be tapped manually
+  bgMusic.play().then(()=> songPlayBtn.textContent = '❚❚').catch(()=>{});
+}
+
+songPlayBtn.addEventListener('click', ()=>{
+  if (bgMusic.paused){ playSong(); }
+  else{
+    bgMusic.pause();
+    songPlayBtn.textContent = '▶';
+  }
+});
+
+/* ---------- game: reconnect ---------- */
+const bridgeStage       = document.getElementById('bridgeStage');
+const bridgeTrack       = document.getElementById('bridgeTrack');
+const bridgeCountEl     = document.getElementById('bridgeCount');
+const bridgeTotalEl     = document.getElementById('bridgeTotal');
+const btnGameContinue   = document.getElementById('btnGameContinue');
+
+const tapsNeeded = CONFIG.bridgeTapsNeeded;
+bridgeTotalEl.textContent = tapsNeeded;
+
+let slotEls = [];
+let tapped  = 0;
+let spawnTimer = null;
+
+function setupBridgeSlots(){
+  bridgeTrack.innerHTML = '';
+  slotEls = [];
+  for (let i = 0; i < tapsNeeded; i++){
+    const slot = document.createElement('div');
+    slot.className = 'bridge-slot';
+    bridgeTrack.appendChild(slot);
+    slotEls.push(slot);
+  }
+}
+
+function spawnFloatingHeart(){
+  if (tapped >= tapsNeeded) return;
+  const h = document.createElement('button');
+  h.className = 'floating-heart';
+  h.textContent = '🤝';
+  h.style.left = (8 + Math.random() * 80) + '%';
+  h.style.setProperty('--dur', (2.6 + Math.random() * 1.4).toFixed(2) + 's');
+
+  h.addEventListener('click', ()=>{
+    if (tapped >= tapsNeeded){ h.remove(); return; }
+    slotEls[tapped].classList.add('is-filled');
+    tapped++;
+    bridgeCountEl.textContent = tapped;
+    h.remove();
+
+    if (tapped >= tapsNeeded){
+      clearInterval(spawnTimer);
+      document.querySelectorAll('.floating-heart').forEach(el=> el.remove());
+      btnGameContinue.disabled = false;
+    }
+  });
+
+  bridgeStage.appendChild(h);
+  setTimeout(()=>{ if (h.isConnected) h.remove(); }, 4200);
+}
+
+function startBridgeGame(){
+  tapped = 0;
+  bridgeCountEl.textContent = 0;
+  btnGameContinue.disabled = true;
+  setupBridgeSlots();
+  document.querySelectorAll('.floating-heart').forEach(el=> el.remove());
+  clearInterval(spawnTimer);
+  spawnTimer = setInterval(spawnFloatingHeart, 750);
+}
+
+function stopBridgeGame(){
+  clearInterval(spawnTimer);
+  spawnTimer = null;
+}
+
+/* ---------- floating hearts on the closing screen ---------- */
+const ambientHearts = document.getElementById('ambientHearts');
+let ambientTimer = null;
+
+function startAmbientHearts(){
+  ambientHearts.innerHTML = '';
+  ambientTimer = setInterval(()=>{
+    const h = document.createElement('span');
+    h.className = 'ambient-heart';
+    h.textContent = ['✨','🎉'][Math.floor(Math.random()*2)];
+    h.style.left = Math.random()*100 + '%';
+    h.style.animationDuration = (6 + Math.random()*5) + 's';
+    ambientHearts.appendChild(h);
+    setTimeout(()=>{ if (h.isConnected) h.remove(); }, 12000);
+  }, 500);
+}
+
+function stopAmbientHearts(){
+  clearInterval(ambientTimer);
+  ambientTimer = null;
+}
+</script>
+</body>
+</html>
