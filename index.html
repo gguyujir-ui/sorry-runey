@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maaf, Bestie...</title>
+<title>i'm sorry, runey...</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -297,9 +297,9 @@
      1. LANDING
      ============================================================ -->
 <section class="screen active" data-screen="landing">
-  <h1 class="script" id="txtJudulLanding">Maaf, Bestie...</h1>
+  <h1 class="script" id="txtJudulLanding">i'm sorry, runey...</h1>
   <p class="subtitle" id="txtSubLanding">Ruang buat aku jujur dan benerin hubungan pertemanan kita.</p>
-  <button class="pill-btn" data-goto="envelope">Mulai</button>
+  <button class="pill-btn" data-goto="envelope">start</button>
 </section>
 
 <!-- ============================================================
@@ -314,8 +314,8 @@
   <p class="envelope-hint" id="envelopeHint">ketuk buat buka</p>
 
   <div class="envelope-choices" id="envelopeChoices">
-    <button class="pill-btn" data-goto="letter">Baca</button>
-    <button class="pill-btn outline" data-goto="waiting" data-return="envelope">Aku butuh waktu lagi</button>
+    <button class="pill-btn" data-goto="letter">read</button>
+    <button class="pill-btn outline" data-goto="waiting" data-return="envelope">i need more time</button>
   </div>
 </section>
 
@@ -333,7 +333,7 @@
      4. SURAT
      ============================================================ -->
 <section class="screen" data-screen="letter">
-  <h2 class="script" id="txtJudulSurat">Maaf, Bestie...</h2>
+  <h2 class="script" id="txtJudulSurat">i'm sorry, runey...</h2>
 
   <div class="song-card">
     <div class="song-cover">♪</div>
@@ -346,14 +346,14 @@
 
   <div class="letter-body" id="letterBody"></div>
 
-  <button class="pill-btn" data-goto="forgive">Lanjut</button>
+  <button class="pill-btn" data-goto="forgive">continue</button>
 </section>
 
 <!-- ============================================================
      5. MINTA MAAF
      ============================================================ -->
 <section class="screen" data-screen="forgive">
-  <h2 class="script">Kamu mau maafin aku?</h2>
+  <h2 class="script">do you want to forgive me?</h2>
   <p style="font-size:3rem; margin:0;">🥺</p>
   <div class="btn-row">
     <button class="pill-btn" data-goto="yesTransition">Ya</button>
@@ -365,16 +365,16 @@
      6. TRANSISI "YEE"
      ============================================================ -->
 <section class="screen" data-screen="yesTransition">
-  <h1 class="script">Yeaay...</h1>
-  <button class="pill-btn" data-goto="game">Lanjut</button>
+  <h1 class="script">yeaay...</h1>
+  <button class="pill-btn" data-goto="game">continue</button>
 </section>
 
 <!-- ============================================================
      7. GAME — SAMBUNGKAN JEMBATAN
      ============================================================ -->
 <section class="screen" data-screen="game">
-  <h2 class="script">Yuk, Sambung Lagi</h2>
-  <p class="subtitle">Pencet tos yang muncul buat bantu nutup jarak di antara kita berdua.</p>
+  <h2 class="script">yuk, sambung lagi</h2>
+  <p class="subtitle">pencet tos yang muncul buat bantu nutup jarak di antara kita berdua.</p>
 
   <div class="bridge-stage" id="bridgeStage">
     <span class="side-heart">🤝</span>
@@ -382,9 +382,9 @@
     <span class="side-heart">🤝</span>
   </div>
 
-  <p class="bridge-status">Kompak: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
+  <p class="bridge-status">kompak: <span id="bridgeCount">0</span>/<span id="bridgeTotal">10</span></p>
 
-  <button class="pill-btn" id="btnGameLanjut" data-goto="promise" disabled>Lanjut</button>
+  <button class="pill-btn" id="btnGameLanjut" data-goto="promise" disabled>continue</button>
 </section>
 
 <!-- ============================================================
@@ -392,8 +392,8 @@
      ============================================================ -->
 <section class="screen" data-screen="promise">
   <div class="ambient-hearts" id="ambientHearts"></div>
-  <h2 class="script">Aku janji, ini nggak akan kejadian lagi.</h2>
-  <p class="subtitle">Makasih udah baca sampai sini, bestie. Circle kita masih solid kok. 🤝</p>
+  <h2 class="script">akmal berjanji, ini nggak akan kejadian lagi.</h2>
+  <p class="subtitle">thanks for reading this far, bestie. 🤝</p>
   <button class="pill-btn outline" data-goto="landing">↺ ulangi dari awal</button>
 </section>
 
